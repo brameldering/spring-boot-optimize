@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 @Service
 public class AlbumService {
 
-  private AlbumRepository albumRepository;
-  private UserRepository userRepository;
-  private CardRepository cardRepository;
-  private PlayerRepository playerRepository;
+  private final AlbumRepository albumRepository;
+  private final UserRepository userRepository;
+  private final CardRepository cardRepository;
+  private final PlayerRepository playerRepository;
 
   public AlbumService(AlbumRepository albumRepository,  UserRepository userRepository, CardRepository cardRepository, PlayerRepository playerRepository) {
     this.albumRepository = albumRepository;

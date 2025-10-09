@@ -22,7 +22,7 @@ import jakarta.persistence.criteria.Root;
 @Service
 public class DynamicQueriesService {
 
-  private EntityManager em;
+  private final EntityManager em;
 
   public DynamicQueriesService(EntityManager em) {
     this.em = em;

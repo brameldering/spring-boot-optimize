@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AlbumsController {
 
-  private AlbumService albumService;
+  private final AlbumService albumService;
 
   public AlbumsController(AlbumService albumService) {
     this.albumService = albumService;

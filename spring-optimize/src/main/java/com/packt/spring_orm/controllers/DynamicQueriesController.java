@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/queries")
 public class DynamicQueriesController {
 
-  private DynamicQueriesService dynamicQueriesService;
+  private final DynamicQueriesService dynamicQueriesService;
 
   public DynamicQueriesController(DynamicQueriesService dynamicQueriesService) {
     this.dynamicQueriesService = dynamicQueriesService;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/spring-optimize/src/main/resources/db/migration/V1__InitialDatabase.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/spring-optimize/src/main/resources/db/migration/V2_1__CreateSampleMatches.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/spring-optimize/src/main/resources/db/migration/V2__AddMatches.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/spring-optimize/src/main/resources/db/migration/V4__AddMatchEvents.sql" dialect="PostgreSQL" />
+  </component>
+</project>

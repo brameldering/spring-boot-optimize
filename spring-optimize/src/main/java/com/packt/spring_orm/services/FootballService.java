@@ -24,9 +24,9 @@ import static java.util.stream.Collectors.toList;
 public class FootballService {
   private final PlayerRepository playerRepository;
   private final TeamRepository teamRepository;
-  private MatchRepository matchRepository;
-  private AlbumRepository albumRepository;
-  private MatchEventRepository matchEventRepository;
+  private final MatchRepository matchRepository;
+  private final AlbumRepository albumRepository;
+  private final MatchEventRepository matchEventRepository;
 
   public FootballService(PlayerRepository playerRepository, TeamRepository teamRepository,MatchRepository matchRepository, AlbumRepository albumRepository, MatchEventRepository matchEventRepository) {
     this.playerRepository = playerRepository;
