@@ -10,7 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spring_optimize</artifactId>
+    <artifactId>spring-optimize</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring_orm</name>
     <description>Demo project for optimizing Spring Boot applications</description>

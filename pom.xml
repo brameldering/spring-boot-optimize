@@ -19,7 +19,7 @@
     <description>A root POM for examples for optimizing Spring Boot.</description>
 
     <modules>
-        <module>spring_optimize</module>
+        <module>spring-optimize</module>
     </modules>
 
     <properties>
