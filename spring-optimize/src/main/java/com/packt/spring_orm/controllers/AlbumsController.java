@@ -35,7 +35,7 @@ public class AlbumsController {
   }
 
   @GetMapping("users/{userId}")
-  public TradingUser getUserWithCardsAndAlbums(@PathVariable Long userId) {
+  public Optional<TradingUser> getUserWithCardsAndAlbums(@PathVariable Long userId) {
     return albumService.getUserWithCardsAndAlbums(userId);
   }
 

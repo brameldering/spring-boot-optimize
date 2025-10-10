@@ -4,6 +4,7 @@ import com.packt.spring_orm.entities.AlbumEntity;
 import com.packt.spring_orm.entities.CardEntity;
 import com.packt.spring_orm.entities.PlayerEntity;
 import com.packt.spring_orm.entities.UserEntity;
+import com.packt.spring_orm.mappers.PlayerMapper;
 import com.packt.spring_orm.records.*;
 import com.packt.spring_orm.repositories.AlbumRepository;
 import com.packt.spring_orm.repositories.CardRepository;
@@ -29,14 +30,17 @@ public class AlbumService {
   private final UserRepository userRepository;
   private final CardRepository cardRepository;
   private final PlayerRepository playerRepository;
+  private final PlayerMapper playerMapper;
 
   public AlbumService(AlbumRepository albumRepository,  UserRepository userRepository, CardRepository cardRepository, PlayerRepository playerRepository) {
     this.albumRepository = albumRepository;
     this.userRepository = userRepository;
     this.cardRepository = cardRepository;
     this.playerRepository = playerRepository;
+    this.playerMapper = new PlayerMapper();
   }
 
+  @Transactional
   public Album buyAlbum (Long userId, String title) {
     AlbumEntity albumEntity = new AlbumEntity();
     albumEntity.setTitle(title);
@@ -46,6 +50,7 @@ public class AlbumService {
     return new Album(albumEntity.getId(), albumEntity.getTitle(), albumEntity.getOwner().getId());
   }
 
+  @Transactional
   public List<Card> buyCards(Long userId, Integer count) {
     Random random = new Random();
     List<PlayerEntity> players = getAvailablePlayers();
@@ -57,7 +62,7 @@ public class AlbumService {
       return cardEntity;
     }).limit(count).toList();
     return cardRepository.saveAll(cardEntities).stream().map(cardEntity -> new Card(cardEntity.getId(), cardEntity.getOwner().getId(), Optional.empty(),
-        new Player(cardEntity.getPlayer().getName(), cardEntity.getPlayer().getJerseyNumber(), cardEntity.getPlayer().getPosition(), cardEntity.getPlayer().getDateOfBirth())))
+            playerMapper.map(cardEntity.getPlayer())))
         .collect(Collectors.toList());
   }
 
@@ -73,10 +78,12 @@ public class AlbumService {
       return Optional.empty();
     } else {
       CardEntity card = cardRepository.findById(cardId).orElseThrow();
+      if (card.getOwner()==null) {
+        throw new RuntimeException("New owner not found");
+      }
       return Optional.of(new Card(card.getId(), card.getOwner().getId(),
           card.getAlbum() == null ? Optional.empty() : Optional.of(card.getAlbum().getId()),
-          new Player(card.getPlayer().getName(), card.getPlayer().getJerseyNumber(),
-              card.getPlayer().getPosition(), card.getPlayer().getDateOfBirth())));
+          playerMapper.map(card.getPlayer())));
     }
   }
 
@@ -86,14 +93,14 @@ public class AlbumService {
     card.setAlbum(album);
     card = cardRepository.save(card);
     return new Card(card.getId(), card.getOwner().getId(), Optional.of(card.getAlbum().getId()),
-        new Player(card.getPlayer().getName(), card.getPlayer().getJerseyNumber(),
-            card.getPlayer().getPosition(), card.getPlayer().getDateOfBirth()));
+        playerMapper.map(card.getPlayer()));
 
   }
 
   /*
    * Take all non used cards of the user and assign to the albums of the user
    */
+  @Transactional
   public List<Card> useAllCardAvailable(Long userId) {
     // UserEntity user = usersRepository.findById(userId).orElseThrow();
     // List<CardEntity> cards = cardsRepository.findAllByOwnerAndAlbumIsNull(user);
@@ -105,8 +112,7 @@ public class AlbumService {
     return cardRepository.assignCardsToUserAlbums(userId)
         .stream()
         .map(c -> new Card(c.getId(), c.getOwner().getId(), Optional.of(c.getAlbum().getId()),
-            new Player(c.getPlayer().getName(), c.getPlayer().getJerseyNumber(),
-                c.getPlayer().getPosition(), c.getPlayer().getDateOfBirth())))
+            playerMapper.map(c.getPlayer())))
         .toList();
   }
 
@@ -116,36 +122,42 @@ public class AlbumService {
     Integer potentialUser2ToUser1 = cardRepository.countMatchBetweenUsers(userId2, userId1);
     Integer count = Math.min(potentialUser1ToUser2, potentialUser2ToUser1);
     if (count > 0) {
-      ArrayList<CardEntity> result = new ArrayList<>(
+      ArrayList<CardEntity> result1 = new ArrayList<>(
           cardRepository.tradeCardsBetweenUsers(userId1, userId2, count));
       useAllCardAvailable(userId2);
-      result.addAll(cardRepository.tradeCardsBetweenUsers(userId2, userId1, count));
+      ArrayList<CardEntity> result2 = new ArrayList<>(
+          cardRepository.tradeCardsBetweenUsers(userId2, userId1, count));
       useAllCardAvailable(userId1);
-      return result.stream()
+      return Stream.concat(result1.stream(), result2.stream())
           .map(c -> new Card(c.getId(), c.getOwner().getId(),
               c.getAlbum() == null ? Optional.empty() : Optional.of(c.getAlbum().getId()),
-              new Player(c.getPlayer().getName(), c.getPlayer().getJerseyNumber(),
-                  c.getPlayer().getPosition(), c.getPlayer().getDateOfBirth())))
+              playerMapper.map(c.getPlayer())))
           .toList();
     } else {
       return List.of();
     }
   }
 
-  public TradingUser getUserWithCardsAndAlbums(Long userId) {
-    UserEntity user = userRepository.findByIdWithCardsAndAlbums(userId);
-    return new TradingUser(new User(user.getId(), user.getUsername()),
-        user.getOwnedCards()
-            .stream()
-            .map(c -> new Card(c.getId(), user.getId(),
-                c.getAlbum() == null ? Optional.empty() : Optional.of(c.getAlbum().getId()),
-                new Player(c.getPlayer().getName(), c.getPlayer().getJerseyNumber(),
-                    c.getPlayer().getPosition(), c.getPlayer().getDateOfBirth())))
-            .toList(),
-        user.getOwnedAlbums()
-            .stream()
-            .map(a -> new Album(a.getId(), a.getTitle(), user.getId()))
-            .toList());
+  @Transactional(readOnly = true)
+  public Optional<TradingUser> getUserWithCardsAndAlbums(Long userId) {
+    Optional<UserEntity> userEntity = userRepository.findByIdWithCardsAndAlbums(userId);
+    if (userEntity.isPresent()) {
+      UserEntity user = userEntity.get();
+
+      return Optional.of(new TradingUser(new User(user.getId(), user.getUsername()),
+          user.getOwnedCards()
+              .stream()
+              .map(c -> new Card(c.getId(), user.getId(),
+                  c.getAlbum() == null ? Optional.empty() : Optional.of(c.getAlbum().getId()),
+                  playerMapper.map(c.getPlayer())))
+              .toList(),
+          user.getOwnedAlbums()
+              .stream()
+              .map(a -> new Album(a.getId(), a.getTitle(), user.getId()))
+              .toList()));
+    } else {
+      return Optional.empty();
+    }
   }
 
 }

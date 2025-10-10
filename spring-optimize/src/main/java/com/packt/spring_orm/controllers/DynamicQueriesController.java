@@ -24,7 +24,7 @@ public class DynamicQueriesController {
   }
 
   @GetMapping("/team/{teamId}/players")
-  public List<Player> searchTeamPlayers(@PathVariable Integer teamId,
+  public List<Player> searchTeamPlayers(@PathVariable Long teamId,
         @RequestParam(required = false) Optional<String> name,
         @RequestParam(required = false) Optional<Integer> minHeight,
         @RequestParam(required = false) Optional<Integer> maxHeight,
@@ -34,14 +34,14 @@ public class DynamicQueriesController {
   }
 
   @GetMapping("/match/{matchId}/events")
-  public List<MatchEvent> getEvents(@PathVariable Integer matchId,
+  public List<MatchEvent> getEvents(@PathVariable Long matchId,
         @RequestParam(required = false) Optional<LocalDateTime> minMinute,
         @RequestParam(required = false) Optional<LocalDateTime> maxMinute) {
     return dynamicQueriesService.searchMatchEventsRangeAndMap(matchId, minMinute, maxMinute);
   }
 
   @GetMapping("/user/{userId}/missing")
-  public List<Player> getMissingPlayers(@PathVariable Integer userId) {
+  public List<Player> getMissingPlayers(@PathVariable Long userId) {
     return dynamicQueriesService.searchUserMissingPlayersAndMap(userId);
   }
 

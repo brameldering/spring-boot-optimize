@@ -9,6 +9,8 @@ import com.packt.spring_orm.entities.MatchEventEntity;
 import com.packt.spring_orm.entities.PlayerEntity;
 import com.packt.spring_orm.records.MatchEvent;
 import com.packt.spring_orm.records.Player;
+import com.packt.spring_orm.mappers.PlayerMapper;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityManager;
@@ -23,13 +25,15 @@ import jakarta.persistence.criteria.Root;
 public class DynamicQueriesService {
 
   private final EntityManager em;
+  private final PlayerMapper playerMapper;
 
-  public DynamicQueriesService(EntityManager em) {
-    this.em = em;
+  public DynamicQueriesService(EntityManagerFactory emFactory, PlayerMapper playerMapper) {
+    this.em = emFactory.createEntityManager();
+    this.playerMapper = playerMapper;
   }
 
   // CriteriaBuilder and CriteriaQuery and em.createquary(criteriaQuery)
-  public List<PlayerEntity> searchTeamPlayers(Integer teamId,
+  public List<PlayerEntity> searchTeamPlayers(Long teamId,
         Optional<String> name,
         Optional<Integer> minHeight, Optional<Integer> maxHeight,
         Optional<Integer> minWeight, Optional<Integer> maxWeight) {
@@ -58,12 +62,12 @@ public class DynamicQueriesService {
     return query.getResultList();
   }
 
-  public List<Player> searchTeamPlayersAndMap(Integer teamId, Optional<String> name,
+  public List<Player> searchTeamPlayersAndMap(Long teamId, Optional<String> name,
         Optional<Integer> minHeight, Optional<Integer> maxHeight,
         Optional<Integer> minWeight, Optional<Integer> maxWeight) {
     return searchTeamPlayers(teamId, name, minHeight, maxHeight, minWeight, maxWeight)
         .stream()
-        .map(p -> new Player(p.getName(), p.getJerseyNumber(), p.getPosition(), p.getDateOfBirth()))
+        .map(playerMapper::map)
         .toList();
   }
 
@@ -71,7 +75,7 @@ public class DynamicQueriesService {
   // the parameters influence the SQL command generated,
   // but they are always passed as query parameters.
   // This to avoid SQL Injection
-  public List<MatchEventEntity> searchMatchEventsRange(Integer matchId,
+  public List<MatchEventEntity> searchMatchEventsRange(Long matchId,
          Optional<LocalDateTime> minTime,
          Optional<LocalDateTime> maxTime) {
     String command = "SELECT e FROM MatchEventEntity e WHERE e.match.id=:matchId ";
@@ -93,7 +97,7 @@ public class DynamicQueriesService {
     return query.getResultList();
   }
 
-  public List<MatchEvent> searchMatchEventsRangeAndMap(Integer matchId,
+  public List<MatchEvent> searchMatchEventsRangeAndMap(Long matchId,
          Optional<LocalDateTime> minMinute,
          Optional<LocalDateTime> maxMinute) {
     return searchMatchEventsRange(matchId, minMinute, maxMinute)
@@ -103,19 +107,25 @@ public class DynamicQueriesService {
   }
 
   // em.createQuery, executeUpdate and getTransaction().commit()
-  public void deleteEventRange(Integer matchId, LocalDateTime start, LocalDateTime end) {
-    em.getTransaction().begin();
-    Query query = em.createQuery(
-        "DELETE FROM MatchEventEntity e WHERE e.match.id=:matchId AND e.time BETWEEN :start AND :end");
-    query.setParameter("matchId", matchId);
-    query.setParameter("start", start);
-    query.setParameter("end", end);
-    query.executeUpdate();
-    em.getTransaction().commit();
+  public void deleteEventRange(Long matchId, LocalDateTime start, LocalDateTime end) {
+    try {
+      em.clear();
+      em.getTransaction().begin();
+      Query query = em.createQuery(
+          "DELETE FROM MatchEventEntity e WHERE e.match.id=:matchId AND e.time BETWEEN :start AND :end");
+      query.setParameter("matchId", matchId);
+      query.setParameter("start", start);
+      query.setParameter("end", end);
+      query.executeUpdate();
+      em.getTransaction().commit();
+    } catch (Exception e) {
+      em.getTransaction().rollback();
+      throw e;
+    }
   }
 
   // Native Query
-  public List<PlayerEntity> searchUserMissingPlayers(Integer userId) {
+  public List<PlayerEntity> searchUserMissingPlayers(Long userId) {
     Query query = em.createNativeQuery(
         "SELECT p1.* FROM players p1 WHERE p1.id NOT IN (SELECT c1.player_id FROM cards c1 WHERE c1.owner_id=?1)",
         PlayerEntity.class);
@@ -123,10 +133,10 @@ public class DynamicQueriesService {
     return query.getResultList();
   }
 
-  public List<Player> searchUserMissingPlayersAndMap(Integer userId) {
+  public List<Player> searchUserMissingPlayersAndMap(Long userId) {
     return searchUserMissingPlayers(userId)
         .stream()
-        .map(p -> new Player(p.getName(), p.getJerseyNumber(), p.getPosition(), p.getDateOfBirth()))
+        .map(playerMapper::map)
         .toList();
   }
 }
