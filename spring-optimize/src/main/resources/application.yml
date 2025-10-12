@@ -2,7 +2,7 @@ spring:
   application:
     name: football
   datasource:
-    url: jdbc:postgresql://localhost:5432/football3
+    url: jdbc:postgresql://localhost:5432/football
     username: packt
     password: packt
     hikari:

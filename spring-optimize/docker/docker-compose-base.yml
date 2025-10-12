@@ -1,5 +1,3 @@
-version: '2.4'
-
 services:
   zipkin_storage:
     image: ghcr.io/openzipkin/zipkin-mysql:${TAG:-latest}
@@ -23,11 +21,15 @@ services:
     depends_on:
       zipkin_storage:
         condition: service_healthy
-  postgresql:
-    image: postgres:latest
+  postgres:
+    image: postgres:16
+    restart: always
     environment:
-      - POSTGRES_USER=packt
-      - POSTGRES_PASSWORD=packt
+      POSTGRES_DB: football
+      POSTGRES_USER: packt
+      POSTGRES_PASSWORD: packt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
   
@@ -44,3 +46,6 @@ services:
       - 3000:3000
     depends_on:
       - prometheus
+
+volumes:
+  postgres_data:
