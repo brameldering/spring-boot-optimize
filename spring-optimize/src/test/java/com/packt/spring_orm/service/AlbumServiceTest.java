@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @ContextConfiguration(initializers = AlbumServiceTest.Initializer.class)
-public class AlbumServiceTest extends AbstractIntegrationInit {
+public class AlbumServiceTest extends AbstractTestInit {
 
   @Autowired
   AlbumService albumService;

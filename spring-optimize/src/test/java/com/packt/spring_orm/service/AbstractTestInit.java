@@ -16,8 +16,8 @@ import org.junit.jupiter.api.BeforeAll;
 @SpringBootTest
 @Testcontainers
 // Note: We use the local Initializer class defined below
-@ContextConfiguration(initializers = AbstractIntegrationInit.Initializer.class)
-public abstract class AbstractIntegrationInit {
+@ContextConfiguration(initializers = AbstractTestInit.Initializer.class)
+public abstract class AbstractTestInit {
 
   // 1. Static container instance
   protected static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.8")

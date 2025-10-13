@@ -25,7 +25,7 @@ import com.packt.spring_orm.services.DynamicQueriesService;
 @SpringBootTest
 @Testcontainers
 @ContextConfiguration(initializers = DynamicQueriesServiceTests.Initializer.class)
-public class DynamicQueriesServiceTests extends AbstractIntegrationInit {
+public class DynamicQueriesServiceTests extends AbstractTestInit {
 
   @Autowired
   DynamicQueriesService dynamicQueriesService;

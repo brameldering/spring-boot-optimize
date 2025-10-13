@@ -30,7 +30,7 @@ import java.util.List;
 @Testcontainers
 @ContextConfiguration(initializers = FootballServiceTest.Initializer.class)
 @ExtendWith(SpringExtension.class)
-public class FootballServiceTest extends AbstractIntegrationInit{
+public class FootballServiceTest extends AbstractTestWithRedisInit {
 
   @Autowired
   private FootballService footballService;

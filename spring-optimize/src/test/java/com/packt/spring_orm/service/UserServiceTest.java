@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @ContextConfiguration(initializers = UserServiceTest.Initializer.class)
-public class UserServiceTest extends AbstractIntegrationInit {
+public class UserServiceTest extends AbstractTestInit {
 
   @Autowired
   UserService userService;
