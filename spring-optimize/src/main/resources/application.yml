@@ -6,7 +6,7 @@ spring:
     username: packt
     password: packt
     hikari:
-      maximum-pool-size: 4
+      maximum-pool-size: 10
   jpa:
 # no longer needed: database-platform: org.hibernate.dialect.PostgreSQLDialect
     # Best to always use open-in-view: false

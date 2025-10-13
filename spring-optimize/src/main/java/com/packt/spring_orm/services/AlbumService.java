@@ -10,6 +10,8 @@ import com.packt.spring_orm.repositories.AlbumRepository;
 import com.packt.spring_orm.repositories.CardRepository;
 import com.packt.spring_orm.repositories.PlayerRepository;
 import com.packt.spring_orm.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,6 +27,8 @@ import java.util.stream.Stream;
 
 @Service
 public class AlbumService {
+
+  private final static Logger log = LoggerFactory.getLogger(AlbumService.class);
 
   private final AlbumRepository albumRepository;
   private final UserRepository userRepository;
@@ -54,7 +58,15 @@ public class AlbumService {
   public List<Card> buyCards(Long userId, Integer count) {
     Random random = new Random();
     List<PlayerEntity> players = getAvailablePlayers();
-    UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+    if (players.isEmpty()) {
+      throw new IllegalStateException("No available players to assign to cards.");
+    }
+    Optional<UserEntity> userOpt = userRepository.findById(userId);
+    if (userOpt.isEmpty()) {
+      log.error("User with id " + userId + " not found.");
+      throw new IllegalArgumentException("User with id " + userId + " not found.");
+    }
+    UserEntity userEntity = userOpt.get();
     List<CardEntity> cardEntities = Stream.generate(() -> {
       CardEntity cardEntity = new CardEntity();
       cardEntity.setOwner(userEntity);

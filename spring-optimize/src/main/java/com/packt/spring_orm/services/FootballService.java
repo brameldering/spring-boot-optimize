@@ -8,6 +8,8 @@ import com.packt.spring_orm.mappers.MatchEventMapper;
 import com.packt.spring_orm.mappers.PlayerMapper;
 import com.packt.spring_orm.records.*;
 import com.packt.spring_orm.repositories.*;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -84,7 +86,7 @@ public class FootballService {
 
   // ================ Player ================
 
-
+  @Cacheable(value = "players")
   public Player getPlayer(Long id) {
     return playerRepository.findById(id)
         .map(playerMapper::map).orElse(null);
@@ -143,6 +145,7 @@ public class FootballService {
         .toList();
   }
 
+  @CacheEvict(value = "players", key="#id")
   public Player updatePlayerPosition(Long id, String position) {
     PlayerEntity playerEntity = playerRepository.findById(id).orElse(null);
     if (playerEntity == null) {
