@@ -10,10 +10,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spring-optimize</artifactId>
+    <artifactId>spring-optimize-native</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring_orm</name>
-    <description>Demo project for optimizing Spring Boot applications</description>
+    <description>Demo project for optimizing Spring Boot applications using native GraalVM</description>
 
     <properties>
         <testcontainers.version>1.19.1</testcontainers.version>
@@ -121,7 +121,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
             <!-- Flyway Maven plugin: version kept explicit -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
@@ -147,6 +150,24 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.hibernate.orm.tooling</groupId>
+                <artifactId>hibernate-enhance-maven-plugin</artifactId>
+                <version>${hibernate.version}</version>
+                <executions>
+                    <execution>
+                        <id>enhance</id>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                        <configuration>
+                            <enableLazyInitialization>true</enableLazyInitialization>
+                            <enableDirtyTracking>true</enableDirtyTracking>
+                            <enableAssociationManagement>true</enableAssociationManagement>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
