@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="reactiveclient" />
         <module name="footballnative" />
         <module name="reactive" />
       </profile>
@@ -26,6 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="footballnative" options="-parameters" />
       <module name="reactive" options="-parameters" />
+      <module name="reactiveclient" options="-parameters" />
       <module name="spring-optimize" options="-parameters" />
       <module name="spring-optimize-native" options="-parameters" />
     </option>

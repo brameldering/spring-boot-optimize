@@ -23,6 +23,7 @@
         <module>spring-optimize</module>
         <module>spring-optimize-native</module>
         <module>reactive</module>
+        <module>reactiveclient</module>
     </modules>
 
     <properties>
