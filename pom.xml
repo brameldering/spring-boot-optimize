@@ -22,6 +22,7 @@
         <module>footballnative</module>
         <module>spring-optimize</module>
         <module>spring-optimize-native</module>
+        <module>spring-optimize-reactive</module>
         <module>reactive</module>
         <module>reactiveclient</module>
     </modules>

@@ -20,6 +20,7 @@
         </processorPath>
         <module name="spring-optimize" />
         <module name="spring-optimize-native" />
+        <module name="spring-optimize-reactive" />
       </profile>
     </annotationProcessing>
   </component>
@@ -30,6 +31,7 @@
       <module name="reactiveclient" options="-parameters" />
       <module name="spring-optimize" options="-parameters" />
       <module name="spring-optimize-native" options="-parameters" />
+      <module name="spring-optimize-reactive" options="-parameters" />
     </option>
   </component>
 </project>
