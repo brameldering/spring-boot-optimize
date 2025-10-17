@@ -11,20 +11,16 @@
     </parent>
 
     <groupId>com.packt</groupId>
-    <artifactId>3-optimize</artifactId>
+    <artifactId>4-rabbitmq</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Optimization Examples</name>
-    <description>A root POM for examples for optimizing Spring Boot.</description>
+    <description>A root POM for examples for event streaming with Spring Boot and RabbitMQ.</description>
 
     <modules>
-        <module>footballnative</module>
-        <module>spring-optimize</module>
-        <module>spring-optimize-native</module>
-        <module>spring-optimize-reactive</module>
-        <module>reactive</module>
-        <module>reactiveclient</module>
+        <module>matches</module>
+        <module>timeline</module>
     </modules>
 
     <properties>

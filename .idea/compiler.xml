@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="timeline" />
         <module name="reactiveclient" />
+        <module name="matches" />
         <module name="footballnative" />
-        <module name="reactive" />
       </profile>
       <profile name="Annotation profile for Spring Boot Optimization Examples" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -23,15 +24,20 @@
         <module name="spring-optimize-reactive" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="reactive" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="footballnative" options="-parameters" />
-      <module name="reactive" options="-parameters" />
+      <module name="matches" options="-parameters" />
+      <module name="reactive" options="" />
       <module name="reactiveclient" options="-parameters" />
       <module name="spring-optimize" options="-parameters" />
       <module name="spring-optimize-native" options="-parameters" />
       <module name="spring-optimize-reactive" options="-parameters" />
+      <module name="timeline" options="-parameters" />
     </option>
   </component>
 </project>
